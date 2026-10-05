@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moodboard — Musik yang mengikuti rasamu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body data-theme="dark">
+    <!-- ================= AUTH SCREEN ================= -->
+    <div id="auth-screen">
+      <div class="auth-card">
+        <div class="auth-visual">
+          <div>
+            <div
+              style="
+                font-size: 0.75rem;
+                font-weight: 800;
+                letter-spacing: 0.02em;
+              "
+            >
+              MOODBOARD
+            </div>
+            <h1 style="margin-top: 60px">
+              Musik yang berubah mengikuti rasamu.
+            </h1>
+            <p style="margin-top: 14px">
+              Pilih mood, biar sistem yang cari lagunya. Kumpulkan XP, menangkan
+              Music Battle, dan lacak perjalanan mood-mu dari waktu ke waktu.
+            </p>
+          </div>
+          <div class="mood-chip-row">
+            <span>😊 Happy</span><span>😌 Chill</span><span>⚡ Energetic</span
+            ><span>🎯 Focus</span><span>🌙 Sleepy</span>
+          </div>
+        </div>
+        <div class="auth-form">
+          <div class="tab-switch">
+            <button id="tab-login" class="active" onclick="setAuthTab('login')">
+              Masuk
+            </button>
+            <button id="tab-register" onclick="setAuthTab('register')">
+              Daftar
+            </button>
+          </div>
+
+          <div id="google-zone">
+            <div id="g-signin-btn"></div>
+            <div id="g-setup" class="hidden">
+              <div class="field" style="margin-top: 4px">
+                <label
+                  >Google Client ID
+                  <span class="sub" style="font-weight: 400"
+                    >(untuk mengaktifkan login Google)</span
+                  ></label
+                >
+                <input
+                  id="g-client-id"
+                  placeholder="xxxxx.apps.googleusercontent.com"
+                />
+              </div>
+              <button
+                class="btn-ghost"
+                style="width: 100%"
+                onclick="saveGoogleClientId()"
+              >
+                Aktifkan Login Google
+              </button>
+            </div>
+            <div class="auth-divider"><span>atau pakai email</span></div>
+          </div>
+
+          <div id="login-form">
+            <div class="field">
+              <label>Email</label
+              ><input
+                id="li-email"
+                type="email"
+                placeholder="kamu@email.com"
+                autocomplete="email"
+              />
+            </div>
+            <div class="err" id="li-email-err"></div>
+            <div class="field">
+              <label>Password</label
+              ><input
+                id="li-pass"
+                type="password"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+            </div>
+            <div class="err" id="li-pass-err"></div>
+            <button class="btn-primary" onclick="doLogin()">
+              Masuk ke Moodboard
+            </button>
+            <div class="auth-note">
+              Akun email disimpan lokal di browser ini. Untuk akun Google asli,
+              gunakan tombol di atas.
+            </div>
+          </div>
+
+          <div id="register-form" class="hidden">
+            <div class="field">
+              <label>Username</label
+              ><input id="rg-user" type="text" placeholder="mis. senja_lofi" />
+            </div>
+            <div class="err" id="rg-user-err"></div>
+            <div class="field">
+              <label>Email</label
+              ><input
+                id="rg-email"
+                type="email"
+                placeholder="kamu@email.com"
+                autocomplete="email"
+              />
+            </div>
+            <div class="err" id="rg-email-err"></div>
+            <div class="field">
+              <label>Password</label
+              ><input
+                id="rg-pass"
+                type="password"
+                placeholder="Min. 8 karakter, huruf besar, kecil, angka"
+                autocomplete="new-password"
+                oninput="updatePwMeter(this.value)"
+              />
+            </div>
+            <div class="pw-meter">
+              <div class="pw-meter-fill" id="pw-meter-fill"></div>
+            </div>
+            <div class="pw-rules" id="pw-rules"></div>
+            <div class="err" id="rg-pass-err"></div>
+            <div class="field">
+              <label>Ulangi Password</label
+              ><input
+                id="rg-pass2"
+                type="password"
+                placeholder="Ketik ulang password"
+                autocomplete="new-password"
+              />
+            </div>
+            <div class="err" id="rg-pass2-err"></div>
+            <div class="field">
+              <label>Foto profil</label>
+              <div class="avatar-pick" id="avatar-pick"></div>
+            </div>
+            <button class="btn-primary" onclick="doRegister()">
+              Buat Akun
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= APP SHELL ================= -->
+    <div id="app">
+      <aside id="sidebar">
+        <div class="brand">
+          <div class="dot"></div>
+          <span>Moodboard</span>
+        </div>
+
+        <div class="mini-profile" id="mini-profile"></div>
+
+        <div>
+          <div class="nav-group-label">Menu Utama</div>
+          <button class="nav-item" data-view="home">
+            <span class="ic">🏠</span>Home
+          </button>
+          <button class="nav-item" data-view="discover">
+            <span class="ic">🔎</span>Discover
+          </button>
+          <button class="nav-item" data-view="mood">
+            <span class="ic">😊</span>Mood
+          </button>
+          <button class="nav-item" data-view="moodai">
+            <span class="ic">🤖</span>Mood AI
+          </button>
+        </div>
+        <div>
+          <div class="nav-group-label">Musik</div>
+          <button class="nav-item" data-view="generator">
+            <span class="ic">🎧</span>Playlist Generator
+          </button>
+          <button class="nav-item" data-view="playlists">
+            <span class="ic">📋</span>Playlists
+          </button>
+          <button class="nav-item" data-view="favorites">
+            <span class="ic">❤️</span>Favorites
+          </button>
+          <button class="nav-item" data-view="battle">
+            <span class="ic">🏆</span>Music Battle
+          </button>
+        </div>
+        <div>
+          <div class="nav-group-label">Progres & Sosial</div>
+          <button class="nav-item" data-view="challenges">
+            <span class="ic">🎯</span>Challenges
+          </button>
+          <button class="nav-item" data-view="stats">
+            <span class="ic">📊</span>Statistics
+          </button>
+          <button class="nav-item" data-view="friends">
+            <span class="ic">👥</span>Friends
+          </button>
+        </div>
+        <div>
+          <div class="nav-group-label">Akun</div>
+          <button class="nav-item" data-view="profile">
+            <span class="ic">👤</span>Profile
+          </button>
+          <button class="nav-item" data-view="settings">
+            <span class="ic">⚙️</span>Settings
+          </button>
+        </div>
+        <div class="spacer"></div>
+      </aside>
+
+      <div id="main">
+        <div id="view" class="hasplayer"></div>
+        <div id="playerbar">
+          <div class="pb-song">
+            <div class="cov" id="pb-cov">🎵</div>
+            <div class="meta">
+              <div class="t" id="pb-title">Belum ada lagu</div>
+              <div class="a" id="pb-artist">—</div>
+            </div>
+            <button
+              class="icon-btn fav"
+              id="pb-fav"
+              onclick="toggleFavCurrent()"
+            >
+              ♡
+            </button>
+          </div>
+          <div class="pb-center">
+            <div class="pb-controls">
+              <button id="pb-shuffle" onclick="toggleShuffle()" title="Shuffle">
+                🔀
+              </button>
+              <button onclick="prevSong()" title="Previous">⏮</button>
+              <button class="play" id="pb-play" onclick="togglePlay()">
+                ▶
+              </button>
+              <button onclick="nextSong()" title="Next">⏭</button>
+              <button id="pb-repeat" onclick="toggleRepeat()" title="Repeat">
+                🔁
+              </button>
+            </div>
+            <div class="pb-progress">
+              <span id="pb-cur">0:00</span>
+              <div class="pb-bar" id="pb-bar" onclick="seek(event)">
+                <div
+                  class="pb-bar-fill"
+                  id="pb-bar-fill"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <span id="pb-dur">0:00</span>
+            </div>
+          </div>
+          <div class="pb-right">
+            <span id="pb-open-wrap"></span>
+            <button onclick="toggleQueue()" title="Queue">📜</button>
+            <div class="pb-vol">
+              🔈<input
+                type="range"
+                id="pb-volume"
+                min="0"
+                max="100"
+                value="70"
+                oninput="setVolume(this.value)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id="sp-audio" preload="none" style="display: none"></audio>
+
+    <div class="queue-drawer" id="queue-drawer">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        "
+      >
+        <h3 style="font-family: var(--serif); font-size: 1.1rem">Antrean</h3>
+        <button class="icon-btn" onclick="toggleQueue()">✕</button>
+      </div>
+      <div id="queue-list"></div>
+    </div>
+
+    <div id="modal-root"></div>
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
